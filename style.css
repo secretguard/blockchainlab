@@ -1,0 +1,187 @@
+/* Background styles */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #3498db, #2ecc71);
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-size: cover;
+}
+
+header {
+  text-align: center;
+  padding: 20px; /* Reduced padding for header */
+  background-color: rgba(0, 0, 0, 0.5);
+  border-bottom: 2px solid #fff;
+  margin-bottom: 20px; /* Reduced bottom margin */
+}
+
+h1 {
+  font-size: 2.5em; /* Slightly smaller title */
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 1.1em; /* Slightly smaller subtitle */
+}
+
+/* Blockchain container */
+#blockchain {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap; /* This allows blocks to wrap to new lines */
+  justify-content: space-evenly; /* Center the blocks */
+}
+
+/* Button Styles */
+#add-block-btn {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  background-color: #3498db; /* Blue background */
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 36px;
+  color: #fff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  animation: pulse 1.5s infinite; /* Pulse animation */
+}
+
+#add-block-btn:hover {
+  background-color: #2980b9; /* Darker blue on hover */
+  transform: scale(1.1); /* Slightly enlarge on hover */
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3); /* More prominent shadow on hover */
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Footer Styles */
+footer {
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+footer p {
+  color: #ccc;
+}
+
+footer a {
+  color: #2ecc71;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Block Styles */
+.block {
+  background-color: #fff;
+  color: #000;
+  margin: 15px;
+  padding: 20px;
+  width: 320px; /* Increased width for more space */
+  height: 300px; /* Increased height for better visibility of content */
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  justify-content: space-between;
+  overflow: hidden; /* Prevent overflow */
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.block:hover {
+  transform: scale(1.05); /* Slight scaling */
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Larger shadow */
+  background-color: #f0f8ff; /* Light blue background */
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.block.invalid {
+  background-color: #ffcccb; 
+  color: #000;
+}
+
+.block p {
+  margin: 5px 0;
+  word-wrap: break-word; /* Allow text to wrap and prevent overflow */
+}
+
+.editable-data {
+  background-color: #f0f0f0;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.save-btn {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  background-color: #2980b9;
+}
+
+/* Prevent overflow of long hashes */
+.full-hash, .previous-hash {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal; /* Allow hash text to wrap */
+  font-size: 0.8em; /* Smaller font for better readability */
+  max-width: 100%;
+  display: block;
+}
+
+/* Styling for the previous hash to ensure visibility */
+.previous-hash {
+  font-size: 0.9em; /* Slightly larger font for visibility */
+  margin-top: 10px;
+}
+.copy-btn {
+  background: none;
+  border: none;
+  color: #3498db;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  color: #2980b9;
+}
+
+
