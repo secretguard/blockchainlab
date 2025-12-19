@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blockchain Chain Reaction</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #2c3e50, #4ca1af);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: rgba(0, 0, 0, 0.4);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #blockchain {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 40px;
+      gap: 50px;
+    }
+
+    .block {
+      background-color: #fff;
+      width: 320px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      transition: background-color 0.3s, border-top-color 0.3s; /* Smooth color transition */
+      border-top: 6px solid #2ecc71;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .block.invalid {
+      background-color: #ffe6e6; 
+      border-top: 6px solid #e74c3c;
+      box-shadow: 0 0 20px rgba(231, 76, 60, 0.4);
+    }
+
+    /* Arrow Connector */
+    .block:not(:last-child)::after {
+      content: '\f061';
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      right: -40px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .input-group { margin-bottom: 12px; }
+    .input-group label { font-size: 0.75rem; font-weight: bold; color: #888; display: block; margin-bottom: 4px; }
+    
+    textarea {
+      width: 100%;
+      height: 50px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px;
+      font-family: inherit;
+      resize: none;
+      font-size: 0.9rem;
+    }
+    textarea:focus { border-color: #3498db; outline: none; background: #f9fbfd; }
+
+    .hash-box {
+      font-family: 'Courier New', monospace;
+      font-size: 0.65rem;
+      background: #f1f2f6;
+      padding: 8px;
+      border-radius: 4px;
+      word-break: break-all;
+      color: #555;
+      border: 1px solid transparent;
+      transition: background 0.3s;
+    }
+
+    .mismatch {
+        background-color: #ffcccc;
+        color: #c0392b;
+        font-weight: bold;
+        border: 1px solid #e74c3c;
+    }
+
+    /* Error Text specific to PrevHash section */
+    .error-msg {
+        color: red;
+        font-size: 0.7em;
+        margin-top: 2px;
+        display: none; /* Hidden by default */
+    }
+    .mismatch + .error-msg {
+        display: block; /* Show if mismatch */
+    }
+
+    .floating-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      color: #2c3e50;
+      border-radius: 50%;
+      border: none;
+      font-size: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .floating-btn:hover { transform: scale(1.1); color: #3498db; }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .badge-valid { background: #e0ffee; color: #27ae60; }
+    .badge-invalid { background: #ffe0e0; color: #c0392b; }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Blockchain Learning Lab</h1>
+    <p>Interactive Demo: Edit <strong>Block 1</strong> to see the chain break.</p>
+  </header>
+
+  <div id="blockchain"></div>
+
+  <button id="add-block-btn" class="floating-btn"><i class="fas fa-plus"></i></button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+  <script>
+    const blockchainDiv = document.getElementById("blockchain");
+    const addBlockBtn = document.getElementById("add-block-btn");
+
+    class Block {
+      constructor(index, timestamp, data, previousHash = "") {
+        this.index = index;
+        this.timestamp = timestamp;
+        this.data = data;
+        this.previousHash = previousHash;
+        this.hash = this.calculateHash();
+      }
+
+      calculateHash() {
+        return CryptoJS.SHA256(
+          this.index + 
+          this.timestamp + 
+          this.data + 
+          this.previousHash
+        ).toString();
+      }
+    }
+
+    class Blockchain {
+      constructor() {
+        this.chain = [this.createGenesisBlock()];
+      }
+      createGenesisBlock() {
+        return new Block(0, new Date().toLocaleTimeString(), "Genesis Block", "0");
+      }
+      getLatestBlock() {
+        return this.chain[this.chain.length - 1];
+      }
+      addBlock(newBlock) {
+        newBlock.previousHash = this.getLatestBlock().hash;
+        newBlock.hash = newBlock.calculateHash();
+        this.chain.push(newBlock);
+      }
+    }
+
+    const myBlockchain = new Blockchain();
+
+    // --- 1. CREATE DOM ELEMENTS (Run only on Init or Add Block) ---
+    function createChain() {
+      blockchainDiv.innerHTML = "";
+      
+      myBlockchain.chain.forEach((block, index) => {
+        const div = document.createElement("div");
+        div.className = "block"; 
+        div.id = `block-${index}`; // ID for easy updates later
+
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+             <h3>Block #${block.index}</h3>
+             <span class="badge badge-valid" id="badge-${index}">VALID</span>
+          </div>
+
+          <div class="input-group">
+            <label>Data</label>
+            <textarea id="data-${index}" data-index="${index}">${block.data}</textarea>
+          </div>
+
+          <div class="input-group">
+            <label>Previous Hash</label>
+            <div class="hash-box" id="prev-hash-${index}">${block.previousHash}</div>
+            <div class="error-msg">Does not match previous block!</div>
+          </div>
+
+          <div class="input-group">
+            <label>Hash</label>
+            <div class="hash-box" id="hash-${index}">${block.hash}</div>
+          </div>
+        `;
+        blockchainDiv.appendChild(div);
+      });
+
+      // Attach listeners (One time per creation)
+      document.querySelectorAll("textarea").forEach(tx => {
+        tx.addEventListener("input", (e) => {
+           const idx = parseInt(e.target.dataset.index);
+           
+           // Update Logic
+           myBlockchain.chain[idx].data = e.target.value;
+           myBlockchain.chain[idx].hash = myBlockchain.chain[idx].calculateHash();
+           
+           // LIGHTWEIGHT UPDATE (No scroll jump!)
+           updateVisuals();
+        });
+      });
+
+      // Run visual check immediately
+      updateVisuals();
+    }
+
+    // --- 2. UPDATE VISUALS (Run on every keystroke) ---
+    function updateVisuals() {
+      let chainBroken = false;
+
+      myBlockchain.chain.forEach((block, index) => {
+        let isBlockValid = true;
+        let prevHashMismatch = false;
+
+        // Check Link
+        if (index > 0) {
+            const previousBlock = myBlockchain.chain[index - 1];
+            if (block.previousHash !== previousBlock.hash) {
+                isBlockValid = false;
+                chainBroken = true;
+                prevHashMismatch = true;
+            }
+        }
+
+        // Domino Effect
+        if (chainBroken) {
+            isBlockValid = false;
+        }
+
+        // --- DOM MANIPULATION (Targeting specific elements) ---
+        const blockDiv = document.getElementById(`block-${index}`);
+        const badge = document.getElementById(`badge-${index}`);
+        const prevHashBox = document.getElementById(`prev-hash-${index}`);
+        const hashBox = document.getElementById(`hash-${index}`);
+
+        // 1. Update Block Color
+        if (isBlockValid) {
+            blockDiv.classList.remove('invalid');
+        } else {
+            blockDiv.classList.add('invalid');
+        }
+
+        // 2. Update Badge Text
+        badge.innerText = isBlockValid ? 'VALID' : 'BROKEN';
+        badge.className = `badge ${isBlockValid ? 'badge-valid' : 'badge-invalid'}`;
+
+        // 3. Update Hashes Text
+        // Note: We update PrevHash text just in case (though usually static)
+        // But importantly, we update the mismatch class
+        prevHashBox.innerText = block.previousHash; 
+        if (prevHashMismatch) {
+            prevHashBox.classList.add('mismatch');
+        } else {
+            prevHashBox.classList.remove('mismatch');
+        }
+
+        hashBox.innerText = block.hash;
+      });
+    }
+
+    // --- INIT ---
+    addBlockBtn.addEventListener("click", () => {
+       const newBlock = new Block(
+         myBlockchain.chain.length,
+         new Date().toLocaleTimeString(),
+         "Block Data " + myBlockchain.chain.length
+       );
+       myBlockchain.addBlock(newBlock);
+       createChain(); // Full Rebuild needed for new block
+    });
+
+    // Preset Data
+    myBlockchain.addBlock(new Block(1, new Date().toLocaleTimeString(), "Alice pays Bob $10"));
+    myBlockchain.addBlock(new Block(2, new Date().toLocaleTimeString(), "Bob pays Charlie $5"));
+    
+    createChain(); // Initial Render
+  </script>
+</body>
+</html>
